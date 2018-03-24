@@ -35,13 +35,13 @@ class TrigramModel {
     /*
      * Maps contexts to a bag of words (counter) for each adjacent token.
      * e.g.,
-     * Map([
-     *  [['I', 'love'], {you: 13, bacon: 2, the: 6}],
-     *  [['I', 'got'],  {distracted: 4, '900exp': 1, caught: 1}],
-     *  [['I', 'want'],  {a: 14, to: 7}]
+     * {
+     *  'I love': {you: 13, bacon: 2, the: 6},
+     *  'I got':  {distracted: 4, '900exp': 1, caught: 1},
+     *  'I want':  {a: 14, to: 7}
      * ])
      */
-    this._table = new Map();
+    this._table = {};
   }
 
   /* TODO: predict(): give a token window, return a distribution. */
@@ -49,15 +49,15 @@ class TrigramModel {
   learn(tokens) {
     let sentences = new this.sentenceFactory(tokens);
     for (let [context, adjacent] of sentences) {
-      let counter = this._table.get(context) || new BagOfWords;
+      let key = this._context2key(context);
+      let counter = this._table[key] || new BagOfWords;
       counter.increase(adjacent);
-      this._table.set(context, counter);
+      this._table[key] = counter;
     }
   }
-
+  
   computeContextCrossEntropy(context, adjacent) {
-    assert.equal(N_GRAM_ORDER - 1, context.length);
-    let bag = this._table.get(context);
+    let bag = this._table[this._context2key(context)];
 
     /* The context has never been seen in the corpus: */
     if (!bag) {
@@ -67,8 +67,19 @@ class TrigramModel {
     return bag.crossEntropyOf(adjacent);
   }
 
+  _context2key(context) {
+    assert.equal(2, context.length);
+    let [a, b] = context;
+
+    /* There must not be whitespace in either token. */
+    assert.ok(!a.match(/\s+/));
+    assert.ok(!b.match(/\s+/));
+
+    return `${a} ${b}`;
+  }
+
   get size() {
-    return this._table.size;
+    return Object.keys(this._table).length;
   }
 }
 

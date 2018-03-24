@@ -109,6 +109,7 @@ const test = `$(document).ready(function () {
   let natural = model.computeContextCrossEntropy(['}', ')'], ';');
   let unnatural = model.computeContextCrossEntropy(['NUMBER', ')'], 'var');
 
+  console.log(model);
   assert.ok(natural < Infinity);
   assert.ok(unnatural > natural);
 })();

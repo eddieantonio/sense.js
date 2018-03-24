@@ -36,6 +36,7 @@ class TrigramModel {
   /* TODO: predict(): give a token window, return a distribution. */
 }
 
+
 /**
  * ABC for yielding tokens.
  */
@@ -63,17 +64,61 @@ class Sentences {
     yield* new ForwardSentences(tokens);
   }
 
+  /**
+   * Generates trigrams in the backwards direction.
+   *
+   * An adaptation of:
+   * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py
+   */
+  static *backwards(tokens) {
+    yield* new BackwardSentences(tokens);
+  }
+
   get length() {
     return this.tokens.length;
   }
 }
 
-  /**
-   * Generates forward trigrams.
-   *
-   * An translation of:
-   * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py#L81-L101
-   */
+/**
+ * Generates forward trigrams.
+ *
+ * An translation of:
+ * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py#L81-L101
+ */
+class BackwardSentences extends Sentences {
+  constructor(tokens) {
+    super(tokens);
+  }
+
+  makeSentence(index) {
+    const paddingToken = '</s>';
+    const contextLength = N_GRAM_ORDER - 1;
+
+    const tokens = this.tokens;
+    assert.ok(0 <= index);
+    assert.ok(index < tokens.length);
+
+    const prevToken = tokens[index];
+    const cStart = index + 1;
+    const cEnd = cStart + contextLength;
+    const realContext = tokens.slice(cStart, cEnd);
+
+    if (cEnd > tokens.length) {
+      const padding = repeat(paddingToken, cEnd - tokens.length);
+      return [Array.of(...realContext, ...padding), prevToken];
+    } else {
+      return [realContext, prevToken];
+    }
+  }
+}
+
+
+/**
+ * Generates forward trigrams.
+ *
+ * An translation of:
+ * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py#L81-L101
+ */
 class ForwardSentences extends Sentences {
   constructor(tokens) {
     super(tokens);

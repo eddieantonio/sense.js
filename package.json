@@ -9,6 +9,7 @@
   "author": "Eddie Antonio Santos <easantos@ualberta.ca> (http://eddieantonio.ca/)",
   "license": "GPL-3.0",
   "dependencies": {
+    "ava": "^0.25.0",
     "esprima": "^4.0.0"
   }
 }

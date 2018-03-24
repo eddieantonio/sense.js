@@ -199,6 +199,8 @@ function tokenizeJavaScript(sourceCode) {
       return value;
     case 'Identifier':
       return 'IDENTIFIER';
+    case 'String':
+      return 'STRING';
     default:
       throw new Error(`unknown token ${type}: ${value}`);
     }

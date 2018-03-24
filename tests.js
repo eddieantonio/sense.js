@@ -75,5 +75,40 @@ assert.equal(sense.tokenizeJavaScript(simple).length, (() => {
 })());
 
 
+const train = `
+$(document).ready(function () {
+  $('form').submit(function (evt) {
+    evt.preventDefault();
+    $.ajax('/herp/derp', {
+      method: 'GET',
+      datatype: 'JSON',
+      success: function () {
+        alert('We did it!');
+      },
+      error: function () {
+        alert('Boo! ajax failed');
+      }
+    });
+  });
+});
+`;
+
+/* A test case with a syntax error on line 5. */
+const test = `$(document).ready(function () {
+  $('button').click(function () {
+    console.log('We did it!');
+  };
+});
+`;
+
+/* Test cross-entropies of infinity. */
+assert.ok((() => {
+  let model = new sense.TrigramModel(sense.ForwardSentences);
+  model.learn(sense.tokenizeJavaScript(train));
+
+  return model.computeContextCrossEntropy(['}', ')']) <
+    model.computeContextCrossEntropy([')', 'var']);
+})());
+
 console.log('Test ok!');
 /* eslint no-console: 0 */

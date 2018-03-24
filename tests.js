@@ -102,13 +102,16 @@ const test = `$(document).ready(function () {
 `;
 
 /* Test cross-entropies of infinity. */
-assert.ok((() => {
+(() => {
   let model = new sense.TrigramModel(sense.ForwardSentences);
   model.learn(sense.tokenizeJavaScript(train));
 
-  return model.computeContextCrossEntropy(['}', ')']) <
-    model.computeContextCrossEntropy([')', 'var']);
-})());
+  let natural = model.computeContextCrossEntropy(['}', ')'], ';');
+  let unnatural = model.computeContextCrossEntropy(['NUMBER', ')'], 'var');
+
+  assert.ok(natural < Infinity);
+  assert.ok(unnatural > natural);
+})();
 
 console.log('Test ok!');
 /* eslint no-console: 0 */

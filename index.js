@@ -49,19 +49,32 @@ class TrigramModel {
   learn(tokens) {
     let sentences = new this.sentenceFactory(tokens);
     for (let [context, adjacent] of sentences) {
-      if (this._table.has(context)) {
-        // TODO: refactor to something like "Counter"
-        let counter = this._table.get(context);
-        counter[adjacent] = 1 + (counter[adjacent] || 0);
-      } else {
-        // New context, with its first count.
-        this._table.set(context, {[adjacent]: 1});
-      }
+      let counter = this._table.get(context) || new BagOfWords;
+      counter.increase(adjacent);
+      this._table.set(context, counter);
     }
   }
 
   get size() {
     return this._table.size;
+  }
+}
+
+/**
+ * Counts words.
+ * Can return probability distributions.
+ */
+class BagOfWords {
+  constructor() {
+    this._bag = {};
+  }
+
+  /**
+   * @return this
+   */
+  increase(token) {
+    this._bag[token] = 1 + (this._bag[token] || 0);
+    return this;
   }
 }
 

@@ -99,6 +99,30 @@ class BagOfWords {
     this._bag[token] = 1 + (this._bag[token] || 0);
     return this;
   }
+
+  crossEntropyOf(token) {
+    let count = this._bag[token];
+    /* Doesn't exist, so we're infinitely surprised. */
+    if (!count) {
+      return Infinity;
+    }
+
+    return -Math.log2(count / this.total);
+  }
+
+  *items() {
+    for (let t of Object.keys(this._bag)) {
+      yield [t, this._bag[t]];
+    }
+  }
+
+  get total() {
+    let sum = 0;
+    for (let [, count] of this.items()) {
+      sum += count;
+    }
+    return sum;
+  }
 }
 
 

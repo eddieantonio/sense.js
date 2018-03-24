@@ -36,6 +36,22 @@ assert.deepEqual(
   sense.tokenizeJavaScript(simple)
 );
 
+/* Simple tri-grams. */
+assert.deepEqual(
+  [
+    [['<s>', '<s>'], 'function'],
+    [['<s>', 'function'], 'IDENTIFIER'],
+    [['function', 'IDENTIFIER'], '('],
+    [['IDENTIFIER', '('], ')'],
+    [['(', ')'], '{'],
+    [[')', '{'], '}'],
+  ],
+  Array.from(sense.Sentences.forward(
+    sense.tokenizeJavaScript(simple)
+  ))
+);
+
+
 
 console.log('Test ok!');
 /* eslint no-console: 0 */

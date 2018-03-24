@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 const esprima = require('esprima');
+const assert = require('assert');
+
+
+/**
+ * Hard-code this n-gram order for now.
+ */
+const N_GRAM_ORDER = 3;
+
 
 /**
  * A toy trigram model.
@@ -27,6 +34,70 @@ class TrigramModel {
   }
 
   /* TODO: predict(): give a token window, return a distribution. */
+}
+
+/**
+ * ABC for yielding tokens.
+ */
+class Sentences {
+  constructor(tokens) {
+    this.tokens = tokens;
+  }
+
+  /**
+   * Iterate over n-grams in this sentence.
+   */
+  *[Symbol.iterator]() {
+    for (let i = 0; i < this.tokens.length; i++) {
+      yield this.makeSentence(i);
+    }
+  }
+
+  /**
+   * Generates trigrams in the forwards direction.
+   *
+   * An adaptation of:
+   * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py
+   */
+  static *forward(tokens) {
+    yield* new ForwardSentences(tokens);
+  }
+
+  get length() {
+    return this.tokens.length;
+  }
+}
+
+  /**
+   * Generates forward trigrams.
+   *
+   * An translation of:
+   * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py#L81-L101
+   */
+class ForwardSentences extends Sentences {
+  constructor(tokens) {
+    super(tokens);
+  }
+
+  makeSentence(index) {
+    const paddingToken = '<s>';
+    const contextLength = N_GRAM_ORDER - 1;
+
+    const tokens = this.tokens;
+    assert.ok(0 <= index);
+    assert.ok(index < tokens.length);
+
+    const nextToken = tokens[index];
+    const beginning = atLeast(0, index - contextLength);
+    const realContext = tokens.slice(beginning, index);
+
+    if (index < contextLength) {
+      const padding = repeat(paddingToken, contextLength - index);
+      return [Array.of(...padding, ...realContext), nextToken];
+    } else {
+      return [realContext, nextToken];
+    }
+  }
 }
 
 /**
@@ -47,7 +118,27 @@ function tokenizeJavaScript(sourceCode) {
   });
 }
 
+/**
+ * Returns AT LEAST the minimum number specified.
+ */
+function atLeast(minimum, x) {
+  // Dr. Hindle's favourite
+  return Math.max(minimum, x);
+}
+
+/**
+ * Yield the item /n/ times.
+ */
+function* repeat(item, n) {
+  for (let i = 0; i < n; i++) {
+    yield item;
+  }
+}
+
 module.exports = {
   TrigramModel,
   tokenizeJavaScript,
+  N_GRAM_ORDER,
+  Sentences,
+  ForwardSentences,
 };

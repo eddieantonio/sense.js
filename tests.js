@@ -66,6 +66,14 @@ assert.deepEqual(
   ))
 );
 
+assert.equal(simple.length, (() => {
+  let model = new sense.TrigramModel(sense.ForwardSentences);
+
+  model.learn(sense.tokenizeJavaScript(simple));
+
+  return model.size;
+})());
+
 
 console.log('Test ok!');
 /* eslint no-console: 0 */

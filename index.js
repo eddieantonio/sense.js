@@ -55,6 +55,18 @@ class TrigramModel {
     }
   }
 
+  computeContextCrossEntropy(context, adjacent) {
+    assert.equal(N_GRAM_ORDER - 1, context.length);
+    let bag = this._table.get(context);
+
+    /* The context has never been seen in the corpus: */
+    if (!bag) {
+      return Infinity;
+    }
+
+    return bag.crossEntropyOf(adjacent);
+  }
+
   get size() {
     return this._table.size;
   }

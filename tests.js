@@ -15,3 +15,6 @@ assert.deepEqual([
 ],
   sense. tokenizeJavaScript(simple)
 );
+
+console.log('Test ok!');
+/* eslint no-console: 0 */

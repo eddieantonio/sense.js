@@ -1,0 +1,14 @@
+{
+  "name": "sense.js",
+  "version": "1.0.0",
+  "description": "Toy n-gram syntax checker",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests.js"
+  },
+  "author": "Eddie Antonio Santos <easantos@ualberta.ca> (http://eddieantonio.ca/)",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "esprima": "^4.0.0"
+  }
+}

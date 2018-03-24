@@ -59,7 +59,7 @@ class Sentences {
    * An adaptation of:
    * https://github.com/naturalness/sensibility/saner2018/sensibility/sentences.py
    */
-  static *forward(tokens) {
+  static *forwards(tokens) {
     yield* new ForwardSentences(tokens);
   }
 
@@ -140,5 +140,4 @@ module.exports = {
   tokenizeJavaScript,
   N_GRAM_ORDER,
   Sentences,
-  ForwardSentences,
 };

@@ -46,11 +46,25 @@ assert.deepEqual(
     [['(', ')'], '{'],
     [[')', '{'], '}'],
   ],
-  Array.from(sense.Sentences.forward(
+  Array.from(sense.Sentences.forwards(
     sense.tokenizeJavaScript(simple)
   ))
 );
 
+/* Backwards tri-grams. */
+assert.deepEqual(
+  [
+    [['IDENTIFIER', '('], 'function'],
+    [['(', ')'], 'IDENTIFIER'],
+    [[')', '{'], '('],
+    [['{', '}'], ')'],
+    [['}', '</s>'], '{'],
+    [['</s>', '</s>'], '}'],
+  ],
+  Array.from(sense.Sentences.backwards(
+    sense.tokenizeJavaScript(simple)
+  ))
+);
 
 
 console.log('Test ok!');

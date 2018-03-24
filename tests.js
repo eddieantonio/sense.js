@@ -93,14 +93,6 @@ $(document).ready(function () {
 });
 `;
 
-/* A test case with a syntax error on line 5. */
-const test = `$(document).ready(function () {
-  $('button').click(function () {
-    console.log('We did it!');
-  };
-});
-`;
-
 /* Test calculating cross-entropies. */
 (() => {
   let model = new sense.TrigramModel(sense.ForwardSentences);
@@ -111,6 +103,33 @@ const test = `$(document).ready(function () {
 
   assert.ok(natural < Infinity);
   assert.ok(unnatural > natural);
+})();
+
+/* A test input with no syntax errors.  */
+const testGood = `$(document).ready(function () {
+  $('button').click(function () {
+    console.log('We did it!');
+  });
+});
+`;
+
+/* A test input with a syntax error. Fix:
+ * <input>:5:4: insert ')' before ';' */
+const testBad = `$(document).ready(function () {
+  $('button').click(function () {
+    console.log('We did it!');
+  };
+});
+`;
+
+
+// Test SyntaxCorrecter on good input.
+(() => {
+  let fixer = new sense.SyntaxCorrector();
+  fixer.learn(train);
+
+  let suggestions = fixer.fix(testGood);
+  assert.equal(0, suggestions.length);
 })();
 
 console.log('Test ok!');

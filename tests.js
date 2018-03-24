@@ -66,7 +66,7 @@ assert.deepEqual(
   ))
 );
 
-assert.equal(simple.length, (() => {
+assert.equal(sense.tokenizeJavaScript(simple).length, (() => {
   let model = new sense.TrigramModel(sense.ForwardSentences);
 
   model.learn(sense.tokenizeJavaScript(simple));

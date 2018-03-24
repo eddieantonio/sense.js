@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const esprima = require('esprima');
 const assert = require('assert');
+const esprima = require('esprima');
 
 
 /**
@@ -29,11 +29,40 @@ const N_GRAM_ORDER = 3;
  * A toy trigram model.
  */
 class TrigramModel {
-  constructor() {
-    this._table = {};
+  constructor(sentenceFactory) {
+    assert.ok(new sentenceFactory([]) instanceof Sentences);
+    this.sentenceFactory = sentenceFactory;
+    /*
+     * Maps contexts to a bag of words (counter) for each adjacent token.
+     * e.g.,
+     * Map([
+     *  [['I', 'love'], {you: 13, bacon: 2, the: 6}],
+     *  [['I', 'got'],  {distracted: 4, '900exp': 1, caught: 1}],
+     *  [['I', 'want'],  {a: 14, to: 7}]
+     * ])
+     */
+    this._table = new Map();
   }
 
   /* TODO: predict(): give a token window, return a distribution. */
+
+  learn(tokens) {
+    let sentences = new this.sentenceFactory(tokens);
+    for (let [context, adjacent] of sentences) {
+      if (this._table.has(context)) {
+        // TODO: refactor to something like "Counter"
+        let counter = this._table.get(context);
+        counter[adjacent] = 1 + (counter[adjacent] || 0);
+      } else {
+        // New context, with its first count.
+        this._table.set(context, {[adjacent]: 1});
+      }
+    }
+  }
+
+  get size() {
+    return this._table.size;
+  }
 }
 
 
@@ -185,4 +214,6 @@ module.exports = {
   tokenizeJavaScript,
   N_GRAM_ORDER,
   Sentences,
+  ForwardSentences,
+  BackwardSentences,
 };
